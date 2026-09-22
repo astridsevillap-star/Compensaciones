@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Agenda 360</title>
+<style>
+  :root{
+    --bg:#f5f7fb; --panel:#ffffff; --ink:#182033; --muted:#6d778b; --line:#e7ebf2;
+    --primary:#5b5bd6; --primary2:#7c6ef6; --nav:#141a2a; --nav2:#202840;
+    --green:#18a875; --amber:#f0a320; --red:#e45757; --blue:#3d83f6; --purple:#8b5cf6; --pink:#e85d9e;
+    --shadow:0 12px 35px rgba(29,36,58,.08); --radius:18px;
+  }
+  *{box-sizing:border-box} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+  button,input,select,textarea{font:inherit} button{cursor:pointer}
+  .app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}
+  aside{background:linear-gradient(180deg,var(--nav),#101522 72%);color:#fff;padding:22px 16px;position:sticky;top:0;height:100vh;overflow:auto}
+  .brand{display:flex;gap:12px;align-items:center;padding:4px 8px 22px}.brand-badge{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#746ef7,#eb5cab);display:grid;place-items:center;font-size:23px;box-shadow:0 8px 22px rgba(124,110,246,.35)}
+  .brand strong{display:block;font-size:18px}.brand span{font-size:11px;color:#aeb6c9}
+  nav{display:grid;gap:6px}.nav-btn{border:0;background:transparent;color:#bfc6d8;text-align:left;padding:11px 12px;border-radius:12px;font-weight:650;display:flex;gap:10px;align-items:center}.nav-btn:hover,.nav-btn.active{background:var(--nav2);color:#fff}.nav-btn.active{box-shadow:inset 3px 0 0 #8e82ff}
+  .side-block{margin-top:26px;border-top:1px solid rgba(255,255,255,.08);padding-top:18px}.side-title{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#747f98;padding:0 10px 8px}.legend{display:grid;gap:8px;padding:0 8px;font-size:12px;color:#adb6ca}.legend i{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:8px}
+  main{min-width:0}.topbar{height:76px;background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 26px;position:sticky;top:0;z-index:15}.top-left h1{margin:0;font-size:21px}.top-left p{margin:2px 0 0;color:var(--muted);font-size:12px}.top-actions{display:flex;gap:10px;align-items:center}.search{position:relative}.search input{width:260px;border:1px solid var(--line);background:#f9fafd;padding:10px 12px 10px 36px;border-radius:12px;outline:none}.search span{position:absolute;left:12px;top:9px}.btn{border:1px solid var(--line);background:#fff;padding:10px 14px;border-radius:12px;font-weight:750;color:var(--ink)}.btn:hover{box-shadow:0 4px 15px rgba(25,35,60,.08)}.btn.primary{color:#fff;border:0;background:linear-gradient(135deg,var(--primary),var(--primary2))}.btn.small{padding:7px 10px;font-size:12px}.btn.danger{color:#b22a2a;background:#fff4f4;border-color:#ffd4d4}
+  .content{padding:24px;max-width:1600px;margin:auto}.view{display:none}.view.active{display:block}.section-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:16px}.section-head h2{margin:0;font-size:22px}.section-head p{margin:4px 0 0;color:var(--muted);font-size:13px}
+  .stats{display:grid;grid-template-columns:repeat(5,minmax(150px,1fr));gap:14px;margin-bottom:18px}.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 6px 22px rgba(30,40,65,.04)}.stat-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px}.stat strong{display:block;font-size:28px;margin-top:8px}.stat .hint{font-size:11px;color:var(--muted);margin-top:2px}
+  .grid-2{display:grid;grid-template-columns:1.5fr 1fr;gap:16px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}.panel h3{margin:0 0 14px;font-size:16px}.pulse{display:grid;grid-template-columns:160px 1fr;gap:20px;align-items:center}.ring{--p:50; width:132px;height:132px;border-radius:50%;background:conic-gradient(var(--primary2) calc(var(--p)*1%),#eceef6 0);display:grid;place-items:center;position:relative;margin:auto}.ring:after{content:"";width:100px;height:100px;background:white;border-radius:50%;position:absolute}.ring-text{z-index:2;text-align:center}.ring-text strong{font-size:26px}.ring-text span{display:block;font-size:11px;color:var(--muted)}
+  .barrow{margin:11px 0}.bar-meta{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px}.bar{height:8px;background:#eef1f6;border-radius:999px;overflow:hidden}.bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--pink));border-radius:999px}
+  .focus-list,.timeline-list,.responsible-list{display:grid;gap:9px}.focus-item{border:1px solid var(--line);border-radius:13px;padding:11px 12px;display:flex;gap:11px;align-items:center}.focus-item .dot{font-size:18px}.focus-main{min-width:0;flex:1}.focus-main strong{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.focus-main span{font-size:11px;color:var(--muted)}
+  .pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 8px;font-size:11px;font-weight:800;white-space:nowrap}.pill.red{background:#fff0f0;color:#c33}.pill.amber{background:#fff7df;color:#9a6800}.pill.green{background:#eafaf4;color:#087a54}.pill.blue{background:#edf5ff;color:#2869b6}.pill.purple{background:#f2edff;color:#6740bd}.pill.gray{background:#f2f4f8;color:#626c7e}.pill.pink{background:#ffeff7;color:#b63173}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}.filters select,.filters input{border:1px solid var(--line);background:white;border-radius:10px;padding:9px 11px;color:var(--ink)}
+  .agenda-groups{display:grid;gap:16px}.group-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.group-title h3{margin:0;font-size:15px}.group-title span{font-size:11px;color:var(--muted)}
+  .task-row{display:grid;grid-template-columns:34px minmax(220px,1.7fr) minmax(130px,.8fr) 120px 120px 110px 90px;gap:10px;align-items:center;background:white;border:1px solid var(--line);border-radius:13px;padding:10px 12px;margin-bottom:7px}.task-check{width:25px;height:25px;border-radius:8px;border:2px solid #d5dbea;background:#fff;display:grid;place-items:center}.task-check.done{background:var(--green);border-color:var(--green);color:#fff}.task-name strong{display:block;font-size:13px}.task-name small,.subtle{font-size:11px;color:var(--muted)}.owner{font-size:12px;font-weight:700}.avatar{width:27px;height:27px;border-radius:50%;display:inline-grid;place-items:center;background:#eef0ff;color:#4d48b8;font-size:10px;font-weight:900;margin-right:6px}.date-cell{font-size:11px}.row-actions{display:flex;gap:4px}.icon-btn{border:1px solid var(--line);background:white;border-radius:8px;padding:5px 7px;font-size:12px}.icon-btn:hover{background:#f6f7fb}
+  .kanban{display:grid;grid-template-columns:repeat(5,minmax(230px,1fr));gap:13px;align-items:start;overflow:auto;padding-bottom:8px}.kan-col{background:#eff2f7;border-radius:16px;padding:10px;min-height:520px}.kan-head{display:flex;justify-content:space-between;align-items:center;padding:5px 4px 10px;font-weight:850;font-size:13px}.count{font-size:10px;background:white;border-radius:999px;padding:4px 7px;color:var(--muted)}.kan-drop{min-height:450px}.kan-card{background:white;border:1px solid #e5e9f0;border-radius:13px;padding:12px;margin-bottom:9px;box-shadow:0 4px 10px rgba(30,39,65,.04);cursor:grab}.kan-card:active{cursor:grabbing}.kan-card.dragging{opacity:.45}.kan-card h4{margin:7px 0 5px;font-size:13px}.kan-card p{margin:0;color:var(--muted);font-size:11px}.kan-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px}.mini-date{font-size:10px;color:var(--muted)}
+  .gantt-wrap{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:auto;box-shadow:var(--shadow)}.gantt-head,.gantt-row{display:grid;grid-template-columns:260px 1fr;min-width:1000px}.gantt-head{background:#f7f8fb;border-bottom:1px solid var(--line);font-size:11px;font-weight:800}.gantt-name{padding:12px;border-right:1px solid var(--line)}.gantt-scale{display:grid;grid-template-columns:repeat(14,1fr)}.gantt-scale span{padding:11px 4px;text-align:center;border-right:1px solid var(--line);color:var(--muted)}.gantt-row{border-bottom:1px solid var(--line);min-height:54px}.gantt-row:last-child{border-bottom:0}.gantt-label{padding:10px 12px;border-right:1px solid var(--line)}.gantt-label strong{display:block;font-size:12px}.gantt-label small{color:var(--muted)}.gantt-track{position:relative;background:repeating-linear-gradient(90deg,#fff 0,#fff calc(7.142857% - 1px),#eef1f6 calc(7.142857% - 1px),#eef1f6 7.142857%)}.gantt-bar{position:absolute;top:13px;height:27px;border-radius:9px;background:linear-gradient(90deg,var(--primary),var(--primary2));color:#fff;font-size:10px;padding:7px 8px;overflow:hidden;white-space:nowrap}.gantt-bar.late{background:linear-gradient(90deg,#df5252,#ef7b67)}
+  .people-grid{display:grid;grid-template-columns:repeat(3,minmax(250px,1fr));gap:14px}.person-card{background:white;border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 5px 18px rgba(25,35,60,.04)}.person-top{display:flex;justify-content:space-between;align-items:center}.person-title{display:flex;gap:10px;align-items:center}.big-avatar{width:40px;height:40px;border-radius:14px;background:#eef0ff;color:#524cbd;display:grid;place-items:center;font-weight:900}.person-card h4{margin:0;font-size:14px}.person-card small{color:var(--muted)}.person-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.mini-metric{background:#f8f9fb;border-radius:11px;padding:9px;text-align:center}.mini-metric b{display:block;font-size:16px}.mini-metric span{font-size:10px;color:var(--muted)}
+  .activity-list{display:grid;gap:12px}.activity-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 5px 18px rgba(25,35,60,.04)}.activity-top{display:flex;justify-content:space-between;gap:12px}.activity-top h4{margin:0;font-size:14px}.activity-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.progress-line{height:8px;background:#eef1f5;border-radius:999px;overflow:hidden;margin-top:11px}.progress-line i{display:block;height:100%;background:linear-gradient(90deg,var(--green),#56cfab)}.activity-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:7px;font-size:11px;color:var(--muted)}
+  .empty{padding:35px;text-align:center;color:var(--muted);background:#fff;border:1px dashed #dce1eb;border-radius:16px}
+  .modal{position:fixed;inset:0;background:rgba(18,23,38,.5);display:none;place-items:center;z-index:50;padding:20px}.modal.show{display:grid}.modal-box{width:min(720px,96vw);max-height:90vh;overflow:auto;background:white;border-radius:20px;box-shadow:0 30px 90px rgba(0,0,0,.25);padding:20px}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.modal-head h3{margin:0}.close{border:0;background:#f1f3f7;width:32px;height:32px;border-radius:10px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:11px;font-weight:800;color:#555f72}.field input,.field select,.field textarea{border:1px solid var(--line);border-radius:11px;padding:10px 11px;outline:none}.field textarea{min-height:70px;resize:vertical}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}.subtask-builder{border:1px solid var(--line);border-radius:13px;padding:10px;background:#fafbfc}.subtask-line{display:grid;grid-template-columns:1.5fr .8fr .8fr 35px;gap:7px;margin-bottom:7px}.subtask-line input{width:100%;border:1px solid var(--line);border-radius:9px;padding:8px}.remove-sub{border:0;background:#fff0f0;color:#bc3535;border-radius:9px}
+  .toast{position:fixed;right:22px;bottom:22px;background:#182033;color:white;padding:12px 15px;border-radius:12px;box-shadow:0 15px 40px rgba(0,0,0,.2);z-index:80;opacity:0;transform:translateY(12px);pointer-events:none;transition:.25s}.toast.show{opacity:1;transform:translateY(0)}
+  .kicker{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:800}.today-banner{background:linear-gradient(135deg,#2d2d73,#685bdb);color:white;border-radius:20px;padding:18px;margin-bottom:17px;display:flex;justify-content:space-between;gap:20px;align-items:center;box-shadow:0 14px 35px rgba(73,68,172,.18)}.today-banner h2{margin:2px 0 4px;font-size:20px}.today-banner p{margin:0;color:#d9dcff;font-size:12px}.today-banner .quick{display:flex;gap:8px;flex-wrap:wrap}.today-banner .quick span{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:9px 11px;font-size:11px;font-weight:750}
+  .settings{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.import-label{display:inline-flex;align-items:center;gap:6px}.import-label input{display:none}
+  @media(max-width:1180px){.stats{grid-template-columns:repeat(3,1fr)}.grid-2{grid-template-columns:1fr}.people-grid{grid-template-columns:repeat(2,1fr)}.task-row{grid-template-columns:34px 1.7fr .8fr 100px 90px}.task-row .hide-md{display:none}}
+  @media(max-width:800px){.app{grid-template-columns:1fr}aside{height:auto;position:static;padding:10px}.brand{padding-bottom:8px}nav{grid-template-columns:repeat(4,1fr)}.nav-btn{justify-content:center;font-size:0}.nav-btn span:first-child{font-size:18px}.side-block{display:none}.topbar{padding:0 12px}.search{display:none}.content{padding:14px}.stats{grid-template-columns:repeat(2,1fr)}.pulse{grid-template-columns:1fr}.people-grid{grid-template-columns:1fr}.task-row{grid-template-columns:30px 1fr 88px}.task-row .hide-sm{display:none}.today-banner{align-items:flex-start;flex-direction:column}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.subtask-line{grid-template-columns:1fr 1fr}.kanban{grid-template-columns:repeat(5,260px)}}
+
+  .auth-screen{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at top right,#ece8ff 0,#f6f7fb 38%,#eef2f8 100%);display:grid;place-items:center;padding:22px}.auth-screen.hidden{display:none}.auth-card{width:min(430px,96vw);background:#fff;border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:0 30px 80px rgba(20,27,48,.14)}.auth-logo{width:58px;height:58px;border-radius:18px;background:linear-gradient(135deg,#746ef7,#eb5cab);display:grid;place-items:center;font-size:30px;margin-bottom:18px}.auth-card h2{margin:0 0 6px;font-size:25px}.auth-card>p{margin:0 0 20px;color:var(--muted);font-size:13px}.auth-form{display:grid;gap:12px}.auth-form input{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 13px;outline:none}.auth-form button{width:100%}.auth-help{margin-top:14px;font-size:11px;color:var(--muted);text-align:center}.cloud-state{display:inline-flex;align-items:center;gap:6px;padding:7px 9px;border-radius:999px;background:#eefaf6;color:#087a54;font-size:11px;font-weight:800}.cloud-state.syncing{background:#fff7df;color:#9a6800}.cloud-state.error{background:#fff0f0;color:#c33}.user-menu{display:flex;align-items:center;gap:7px}.user-email{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:var(--muted)}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <div class="auth-logo">🗓️</div>
+    <h2>Agenda 360</h2>
+    <p>Ingrese con las mismas credenciales que utiliza en Mis Finanzas SSP.</p>
+    <div class="auth-form">
+      <input type="email" id="loginEmail" placeholder="Correo electrónico" autocomplete="username">
+      <input type="password" id="loginPassword" placeholder="Contraseña" autocomplete="current-password">
+      <button class="btn primary" id="loginBtn">Ingresar</button>
+    </div>
+    <div class="auth-help" id="loginHelp">☁️ Sus actividades se guardarán en Supabase y estarán disponibles desde cualquier equipo.</div>
+  </div>
+</div>
+<div class="app">
+  <aside>
+    <div class="brand"><div class="brand-badge">🧭</div><div><strong>Agenda 360</strong><span>Seguimiento operativo</span></div></div>
+    <nav>
+      <button class="nav-btn active" data-view="dashboard"><span>🏠</span><span>Inicio</span></button>
+      <button class="nav-btn" data-view="today"><span>🎯</span><span>Mi día</span></button>
+      <button class="nav-btn" data-view="agenda"><span>🗓️</span><span>Agenda maestra</span></button>
+      <button class="nav-btn" data-view="activities"><span>📚</span><span>Actividades</span></button>
+      <button class="nav-btn" data-view="kanban"><span>🧩</span><span>Kanban</span></button>
+      <button class="nav-btn" data-view="gantt"><span>📈</span><span>Gantt</span></button>
+      <button class="nav-btn" data-view="people"><span>👥</span><span>Responsables</span></button>
+      <button class="nav-btn" data-view="settings"><span>⚙️</span><span>Datos</span></button>
+    </nav>
+    <div class="side-block">
+      <div class="side-title">Semáforo automático</div>
+      <div class="legend">
+        <div><i style="background:#e45757"></i>🔴 Vencida</div>
+        <div><i style="background:#f0a320"></i>🟠 En riesgo</div>
+        <div><i style="background:#8b5cf6"></i>🟣 Aplazada</div>
+        <div><i style="background:#18a875"></i>🟢 Completada</div>
+      </div>
+    </div>
+  </aside>
+  <main>
+    <header class="topbar">
+      <div class="top-left"><h1 id="pageTitle">Panel de seguimiento</h1><p id="pageSubtitle">Qué requiere atención hoy y cómo avanza el trabajo.</p></div>
+      <div class="top-actions"><span class="cloud-state" id="cloudState">☁️ Nube</span><div class="user-menu"><span class="user-email" id="userEmail"></span><button class="btn small" id="logoutBtn" title="Cerrar sesión">Salir</button></div>
+        <div class="search"><span>🔎</span><input id="globalSearch" placeholder="Buscar tarea, actividad o responsable…" /></div>
+        <button class="btn primary" id="newActivityBtn">＋ Nueva actividad</button>
+      </div>
+    </header>
+    <div class="content">
+      <section class="view active" id="view-dashboard">
+        <div class="today-banner"><div><div class="kicker" style="color:#bfc3ff">Pulso operativo</div><h2 id="todayHeading">Hoy</h2><p id="todayText">Aquí verá qué está en fecha y qué necesita reacción inmediata.</p></div><div class="quick" id="quickBadges"></div></div>
+        <div class="stats" id="stats"></div>
+        <div class="grid-2">
+          <div class="panel"><h3>📊 Avance general</h3><div class="pulse"><div class="ring" id="progressRing"><div class="ring-text"><strong id="progressPct">0%</strong><span>avance global</span></div></div><div id="progressBars"></div></div></div>
+          <div class="panel"><h3>🔥 Foco inmediato</h3><div class="focus-list" id="focusList"></div></div>
+        </div>
+        <div class="panel" style="margin-top:16px"><h3>👥 Carga y rezagos por responsable</h3><div class="responsible-list" id="responsibleSummary"></div></div>
+      </section>
+
+      <section class="view" id="view-today">
+        <div class="section-head"><div><h2>🎯 Mi día</h2><p>Una sola lista con lo que requiere acción hoy.</p></div><button class="btn" onclick="setView('agenda')">Ver agenda completa →</button></div>
+        <div id="todayView"></div>
+      </section>
+
+      <section class="view" id="view-agenda">
+        <div class="section-head"><div><h2>🗓️ Agenda maestra</h2><p>Todas las mini tareas de todas las actividades, ordenadas por fecha.</p></div></div>
+        <div class="filters">
+          <select id="filterOwner"><option value="">Todos los responsables</option></select>
+          <select id="filterStatus"><option value="">Todos los estados</option><option>Pendiente</option><option>En curso</option><option>Bloqueada</option><option>Aplazada</option><option>Completada</option></select>
+          <select id="filterPriority"><option value="">Todas las prioridades</option><option>Alta</option><option>Media</option><option>Baja</option></select>
+          <button class="btn small" id="clearFilters">Limpiar filtros</button>
+        </div>
+        <div class="agenda-groups" id="agendaGroups"></div>
+      </section>
+
+      <section class="view" id="view-activities">
+        <div class="section-head"><div><h2>📚 Actividades</h2><p>El avance se calcula automáticamente con las mini tareas completadas.</p></div><button class="btn primary" onclick="openActivityModal()">＋ Nueva actividad</button></div>
+        <div class="activity-list" id="activityList"></div>
+      </section>
+
+      <section class="view" id="view-kanban">
+        <div class="section-head"><div><h2>🧩 Kanban</h2><p>Arrastre las tarjetas para cambiar su estado. El vencimiento se calcula por fecha.</p></div></div>
+        <div class="kanban" id="kanbanBoard"></div>
+      </section>
+
+      <section class="view" id="view-gantt">
+        <div class="section-head"><div><h2>📈 Gantt</h2><p>Vista de secuencia de actividades. Se resaltan los frentes que ya llegan vencidos.</p></div></div>
+        <div class="gantt-wrap" id="gantt"></div>
+      </section>
+
+      <section class="view" id="view-people">
+        <div class="section-head"><div><h2>👥 Responsables</h2><p>Carga, avance y rezagos por persona.</p></div></div>
+        <div class="people-grid" id="peopleGrid"></div>
+      </section>
+
+      <section class="view" id="view-settings">
+        <div class="section-head"><div><h2>⚙️ Datos</h2><p>La información se guarda en Supabase y se sincroniza con su cuenta.</p></div></div>
+        <div class="panel"><h3>Respaldo y pruebas</h3><p class="subtle">Puede exportar un respaldo JSON, importarlo a su cuenta o vaciar completamente la agenda en la nube.</p><div class="settings"><button class="btn" id="exportBtn">⬇️ Exportar respaldo</button><label class="btn import-label">⬆️ Importar respaldo<input type="file" id="importFile" accept="application/json"></label><button class="btn danger" id="resetBtn">🗑️ Vaciar agenda</button></div></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="modal" id="activityModal">
+  <div class="modal-box">
+    <div class="modal-head"><h3>✨ Nueva actividad</h3><button class="close" onclick="closeModal('activityModal')">✕</button></div>
+    <div class="form-grid">
+      <div class="field full"><label>Actividad</label><input id="aTitle" placeholder="Ej. Capacitación NIIF 18" /></div>
+      <div class="field"><label>Responsable principal</label><input id="aOwner" placeholder="Nombre" /></div>
+      <div class="field"><label>Proyecto / frente</label><input id="aProject" placeholder="Ej. Desarrollo / Capacitación" /></div>
+      <div class="field"><label>Inicio</label><input type="date" id="aStart" /></div>
+      <div class="field"><label>Fecha objetivo</label><input type="date" id="aDue" /></div>
+      <div class="field"><label>Prioridad</label><select id="aPriority"><option>Alta</option><option selected>Media</option><option>Baja</option></select></div>
+      <div class="field full"><label>Mini tareas</label><div class="subtask-builder" id="subtaskBuilder"></div><button class="btn small" style="margin-top:8px" onclick="addSubtaskLine()">＋ Agregar mini tarea</button></div>
+    </div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('activityModal')">Cancelar</button><button class="btn primary" onclick="saveActivity()">Guardar actividad</button></div>
+  </div>
+</div>
+
+<div class="modal" id="postponeModal">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-head"><h3>🕒 Aplazar tarea</h3><button class="close" onclick="closeModal('postponeModal')">✕</button></div>
+    <input type="hidden" id="postponeTaskId" />
+    <div class="form-grid">
+      <div class="field full"><label>Nueva fecha</label><input type="date" id="postponeDate" /></div>
+      <div class="field full"><label>Motivo del aplazo</label><textarea id="postponeReason" placeholder="Ej. Esperando información del proveedor"></textarea></div>
+    </div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('postponeModal')">Cancelar</button><button class="btn primary" onclick="confirmPostpone()">Guardar aplazo</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL='https://hhvdghksbfpdzggxtukr.supabase.co';
+const SUPABASE_KEY='sb_publishable_A_W60FMC96ddG04BnqEMCw_Etyc8mvE';
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const statuses=['Pendiente','En curso','Bloqueada','Aplazada','Completada'];
+const statusEmoji={'Pendiente':'⚪','En curso':'🔵','Bloqueada':'⛔','Aplazada':'🟣','Completada':'✅'};
+const statusClass={'Pendiente':'gray','En curso':'blue','Bloqueada':'red','Aplazada':'purple','Completada':'green'};
+const statusToDb={'Pendiente':'pendiente','En curso':'en_curso','Bloqueada':'bloqueada','Aplazada':'aplazada','Completada':'completada'};
+const statusFromDb={'pendiente':'Pendiente','en_curso':'En curso','bloqueada':'Bloqueada','aplazada':'Aplazada','completada':'Completada','cancelada':'Cancelada'};
+const priorityToDb={'Alta':'alta','Media':'media','Baja':'baja'};
+const priorityFromDb={'alta':'Alta','media':'Media','baja':'Baja','urgente':'Alta'};
+let state={activities:[],tasks:[]};
+let currentView='dashboard';
+let draggedTaskId=null;
+let currentUser=null;
+
+function iso(d){const x=new Date(d); x.setHours(12,0,0,0); return x.toISOString().slice(0,10)}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return iso(x)}
+function todayISO(){return iso(new Date())}
+function fmtDate(v){if(!v)return'—';const d=new Date(v+'T12:00:00');return new Intl.DateTimeFormat('es-PE',{day:'2-digit',month:'short'}).format(d)}
+function longDate(v){const d=new Date(v+'T12:00:00');return new Intl.DateTimeFormat('es-PE',{weekday:'long',day:'2-digit',month:'long'}).format(d)}
+function initials(name){return (name||'?').split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase()}
+function activityById(id){return state.activities.find(a=>a.id===id)}
+function taskDue(t){return t.postponedUntil||t.dueDate}
+function dayDiff(a,b){return Math.floor((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/86400000)}
+function isOverdue(t){return t.status!=='Completada' && taskDue(t) && taskDue(t)<todayISO()}
+function isRisk(t){if(!taskDue(t))return false;const d=dayDiff(todayISO(),taskDue(t)); return t.status!=='Completada' && !isOverdue(t) && d>=0 && d<=2}
+function activityTasks(aid){return state.tasks.filter(t=>t.activityId===aid)}
+function activityProgress(aid){const arr=activityTasks(aid).filter(t=>t.status!=='Cancelada'); if(!arr.length)return 0; const total=arr.reduce((s,t)=>s+(t.weight||1),0); const done=arr.filter(t=>t.status==='Completada').reduce((s,t)=>s+(t.weight||1),0); return total?Math.round(done/total*100):0}
+function globalProgress(){const arr=state.tasks.filter(t=>t.status!=='Cancelada');if(!arr.length)return 0;const total=arr.reduce((s,t)=>s+(t.weight||1),0);const done=arr.filter(t=>t.status==='Completada').reduce((s,t)=>s+(t.weight||1),0);return total?Math.round(done/total*100):0}
+function ownerList(){return [...new Set(state.tasks.map(t=>t.owner).filter(Boolean))].sort()}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2200)}
+function setCloud(status,msg){const el=document.getElementById('cloudState');el.className='cloud-state'+(status==='syncing'?' syncing':status==='error'?' error':'');el.textContent=(status==='syncing'?'⏳ ':status==='error'?'⚠️ ':'☁️ ')+(msg||'Sincronizado')}
+function errMsg(error){console.error(error);setCloud('error','Error de nube');toast('⚠️ '+(error?.message||'No se pudo sincronizar'))}
+
+function mapActivity(r){return {id:r.id,title:r.titulo,owner:r.responsable||'',project:r.proyecto||'',startDate:r.fecha_inicio,dueDate:r.fecha_fin,priority:priorityFromDb[r.prioridad]||'Media',status:statusFromDb[r.estado]||'Pendiente'}}
+function mapTask(r){const postponed=r.fecha_vencimiento_original&&r.fecha_vencimiento&&r.fecha_vencimiento!==r.fecha_vencimiento_original;return {id:r.id,activityId:r.actividad_id,title:r.titulo,owner:r.responsable||'',startDate:r.fecha_inicio,dueDate:r.fecha_vencimiento_original||r.fecha_vencimiento,postponedUntil:postponed?r.fecha_vencimiento:null,postponeReason:r.ultimo_motivo_aplazo||'',status:statusFromDb[r.estado]||'Pendiente',priority:priorityFromDb[r.prioridad]||'Media',completedAt:r.fecha_completada,weight:Number(r.peso||1),postponeCount:r.aplazamientos||0}}
+async function syncFromCloud(){if(!currentUser)return;setCloud('syncing','Sincronizando');const [{data:a,error:ae},{data:t,error:te}]=await Promise.all([db.from('agenda_actividades').select('*').order('created_at',{ascending:true}),db.from('agenda_tareas').select('*').order('fecha_vencimiento',{ascending:true})]);if(ae||te){errMsg(ae||te);return}state.activities=(a||[]).map(mapActivity);state.tasks=(t||[]).map(mapTask);renderAll();setCloud('ok','Sincronizado')}
+async function logHistory({activityId=null,taskId=null,type='edicion',detail='',before=null,after=null}){if(!currentUser)return;const payload={user_id:currentUser.id,actividad_id:activityId,tarea_id:taskId,tipo_evento:type,detalle:detail,datos_anteriores:before,datos_nuevos:after};const {error}=await db.from('agenda_historial').insert(payload);if(error)console.warn('Historial',error)}
+
+function riskPill(t){if(t.status==='Completada') return '<span class="pill green">✅ Cerrada</span>';if(t.status==='Aplazada') return '<span class="pill purple">🕒 Aplazada</span>';if(isOverdue(t)){const n=Math.abs(dayDiff(todayISO(),taskDue(t)));return `<span class="pill red">🔥 ${n}d atraso</span>`}if(isRisk(t))return '<span class="pill amber">⚠️ En riesgo</span>';return `<span class="pill ${statusClass[t.status]||'gray'}">${statusEmoji[t.status]||'⚪'} ${t.status}</span>`}
+function pageCopy(view){const x={dashboard:['Panel de seguimiento','Qué requiere atención hoy y cómo avanza el trabajo.'],today:['Mi día','Prioridades y compromisos de hoy.'],agenda:['Agenda maestra','Todas las mini tareas ordenadas por fecha.'],activities:['Actividades','Seguimiento por frente y avance automático.'],kanban:['Kanban','Mueva las tareas según su flujo de trabajo.'],gantt:['Gantt','Secuencia y fechas de los principales frentes.'],people:['Responsables','Carga, avance y rezagos por persona.'],settings:['Datos','Respaldo y sincronización en Supabase.']};return x[view]}
+function setView(view){currentView=view;document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById('view-'+view).classList.add('active');document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===view));const c=pageCopy(view);document.getElementById('pageTitle').textContent=c[0];document.getElementById('pageSubtitle').textContent=c[1];if(view==='gantt')renderGantt()}
+
+document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
+document.getElementById('newActivityBtn').addEventListener('click',openActivityModal);
+function renderAll(){renderDashboard();renderToday();renderAgenda();renderActivities();renderKanban();renderGantt();renderPeople();renderOwnerFilter()}
+function renderDashboard(){const total=state.tasks.length,done=state.tasks.filter(t=>t.status==='Completada').length,overdue=state.tasks.filter(isOverdue).length,today=state.tasks.filter(t=>t.status!=='Completada'&&taskDue(t)===todayISO()).length,postponed=state.tasks.filter(t=>t.status==='Aplazada').length;document.getElementById('todayHeading').textContent='Hoy, '+longDate(todayISO());document.getElementById('todayText').textContent=overdue?`Tiene ${overdue} tarea${overdue!==1?'s':''} vencida${overdue!==1?'s':''} que requieren seguimiento.`:'No hay vencidos críticos. Mantenga el foco en las fechas próximas.';document.getElementById('quickBadges').innerHTML=`<span>🎯 ${today} para hoy</span><span>🔥 ${overdue} vencidas</span><span>🕒 ${postponed} aplazadas</span>`;const statData=[['📚','Actividades',state.activities.length,'frentes activos'],['🎯','Para hoy',today,'compromisos'],['🔥','Vencidas',overdue,'requieren reacción'],['🕒','Aplazadas',postponed,'con nueva fecha'],['✅','Cerradas',done,`${total?Math.round(done/total*100):0}% del total`]];document.getElementById('stats').innerHTML=statData.map(s=>`<div class="stat"><div class="stat-top"><span>${s[0]} ${s[1]}</span><span>•••</span></div><strong>${s[2]}</strong><div class="hint">${s[3]}</div></div>`).join('');const p=globalProgress();document.getElementById('progressRing').style.setProperty('--p',p);document.getElementById('progressPct').textContent=p+'%';document.getElementById('progressBars').innerHTML=state.activities.slice().sort((a,b)=>activityProgress(b.id)-activityProgress(a.id)).map(a=>{const ap=activityProgress(a.id);return `<div class="barrow"><div class="bar-meta"><span>${a.title}</span><b>${ap}%</b></div><div class="bar"><i style="width:${ap}%"></i></div></div>`}).join('');const focus=state.tasks.filter(t=>t.status!=='Completada').sort((a,b)=>{const ax=isOverdue(a)?-100:dayDiff(todayISO(),taskDue(a));const bx=isOverdue(b)?-100:dayDiff(todayISO(),taskDue(b));return ax-bx}).slice(0,6);document.getElementById('focusList').innerHTML=focus.length?focus.map(t=>`<div class="focus-item"><div class="dot">${isOverdue(t)?'🔥':isRisk(t)?'⚠️':t.status==='Aplazada'?'🕒':'📌'}</div><div class="focus-main"><strong>${t.title}</strong><span>${activityById(t.activityId)?.title||''} · ${t.owner} · vence ${fmtDate(taskDue(t))}</span></div>${riskPill(t)}</div>`).join(''):'<div class="empty">🎉 Sin pendientes críticos.</div>';renderResponsibleSummary()}
+function renderResponsibleSummary(){const owners=ownerList();const html=owners.map(o=>{const arr=state.tasks.filter(t=>t.owner===o),open=arr.filter(t=>t.status!=='Completada').length,late=arr.filter(isOverdue).length,p=arr.length?Math.round(arr.filter(t=>t.status==='Completada').length/arr.length*100):0;return `<div class="focus-item"><div class="avatar">${initials(o)}</div><div class="focus-main"><strong>${o}</strong><span>${open} pendientes · ${late} vencidas</span></div><div style="min-width:110px"><div class="bar"><i style="width:${p}%"></i></div><div class="subtle" style="text-align:right;margin-top:3px">${p}%</div></div></div>`}).join('');document.getElementById('responsibleSummary').innerHTML=html||'<div class="empty">Sin responsables todavía.</div>'}
+function taskRow(t){const a=activityById(t.activityId);return `<div class="task-row" data-task="${t.id}"><button class="task-check ${t.status==='Completada'?'done':''}" onclick="toggleTask('${t.id}')">${t.status==='Completada'?'✓':''}</button><div class="task-name"><strong>${t.title}</strong><small>${a?.title||''}</small></div><div class="owner hide-sm"><span class="avatar">${initials(t.owner)}</span>${t.owner}</div><div class="date-cell">📅 ${fmtDate(taskDue(t))}</div><div class="hide-md">${riskPill(t)}</div><div class="hide-md"><span class="pill ${t.priority==='Alta'?'red':t.priority==='Media'?'amber':'gray'}">${t.priority}</span></div><div class="row-actions"><button class="icon-btn" title="Aplazar" onclick="openPostpone('${t.id}')">🕒</button><button class="icon-btn" title="Eliminar" onclick="deleteTask('${t.id}')">🗑️</button></div></div>`}
+function groupTasks(arr){const td=todayISO(),next7=addDays(td,7);return [['🔥 Vencidas',arr.filter(isOverdue)],['🎯 Hoy',arr.filter(t=>t.status!=='Completada'&&taskDue(t)===td)],['⏳ Próximos 7 días',arr.filter(t=>t.status!=='Completada'&&taskDue(t)>td&&taskDue(t)<=next7)],['🗓️ Más adelante',arr.filter(t=>t.status!=='Completada'&&taskDue(t)>next7)],['✅ Cerradas',arr.filter(t=>t.status==='Completada')]]}
+function renderToday(){const arr=state.tasks.filter(t=>t.status!=='Completada'&&(isOverdue(t)||taskDue(t)===todayISO()||isRisk(t))).sort((a,b)=>(taskDue(a)||'').localeCompare(taskDue(b)||''));document.getElementById('todayView').innerHTML=arr.length?arr.map(taskRow).join(''):'<div class="empty">🎉 No tiene tareas urgentes para hoy.</div>'}
+function currentFilters(){return {o:document.getElementById('filterOwner')?.value||'',s:document.getElementById('filterStatus')?.value||'',p:document.getElementById('filterPriority')?.value||'',q:(document.getElementById('globalSearch')?.value||'').toLowerCase().trim()}}
+function filteredTasks(){const f=currentFilters();return state.tasks.filter(t=>{const a=activityById(t.activityId);return (!f.o||t.owner===f.o)&&(!f.s||t.status===f.s)&&(!f.p||t.priority===f.p)&&(!f.q||[t.title,t.owner,a?.title,a?.project].join(' ').toLowerCase().includes(f.q))})}
+function renderAgenda(){const groups=groupTasks(filteredTasks());document.getElementById('agendaGroups').innerHTML=groups.map(([name,arr])=>`<div><div class="group-title"><h3>${name}</h3><span>${arr.length} tareas</span></div>${arr.length?arr.sort((a,b)=>(taskDue(a)||'').localeCompare(taskDue(b)||'')).map(taskRow).join(''):'<div class="empty" style="padding:18px">Sin tareas en este grupo.</div>'}</div>`).join('')}
+function renderOwnerFilter(){const s=document.getElementById('filterOwner');if(!s)return;const old=s.value;s.innerHTML='<option value="">Todos los responsables</option>'+ownerList().map(o=>`<option>${o}</option>`).join('');s.value=old}
+['filterOwner','filterStatus','filterPriority'].forEach(id=>document.getElementById(id).addEventListener('change',renderAgenda));document.getElementById('clearFilters').addEventListener('click',()=>{['filterOwner','filterStatus','filterPriority'].forEach(id=>document.getElementById(id).value='');renderAgenda()});document.getElementById('globalSearch').addEventListener('input',()=>{renderAgenda();if(currentView!=='agenda')setView('agenda')});
+function renderActivities(){const box=document.getElementById('activityList');if(!state.activities.length){box.innerHTML='<div class="empty">Todavía no hay actividades.</div>';return}box.innerHTML=state.activities.map(a=>{const arr=activityTasks(a.id),p=activityProgress(a.id),late=arr.filter(isOverdue).length;return `<div class="activity-card"><div class="activity-top"><div><h4>${a.priority==='Alta'?'🔥':a.priority==='Media'?'📌':'🌿'} ${a.title}</h4><div class="activity-meta"><span class="pill blue">👤 ${a.owner}</span><span class="pill gray">📁 ${a.project||'General'}</span><span class="pill gray">📅 ${fmtDate(a.startDate)} → ${fmtDate(a.dueDate)}</span>${late?`<span class="pill red">${late} vencida${late>1?'s':''}</span>`:''}</div></div><button class="icon-btn" onclick="deleteActivity('${a.id}')">🗑️</button></div><div class="progress-line"><i style="width:${p}%"></i></div><div class="activity-bottom"><span>${arr.filter(t=>t.status==='Completada').length}/${arr.length} mini tareas cerradas</span><b>${p}% avance</b></div></div>`}).join('')}
+function renderKanban(){const board=document.getElementById('kanbanBoard');board.innerHTML=statuses.map(s=>`<div class="kan-col"><div class="kan-head"><span>${statusEmoji[s]} ${s}</span><span class="count">${state.tasks.filter(t=>t.status===s).length}</span></div><div class="kan-drop" data-status="${s}">${state.tasks.filter(t=>t.status===s).map(t=>{const a=activityById(t.activityId);return `<div class="kan-card" draggable="true" data-id="${t.id}"><div>${riskPill(t)}</div><h4>${t.title}</h4><p>${a?.title||''}</p><div class="kan-footer"><span class="mini-date">📅 ${fmtDate(taskDue(t))}</span><span class="avatar">${initials(t.owner)}</span></div></div>`}).join('')}</div></div>`).join('');board.querySelectorAll('.kan-card').forEach(c=>{c.addEventListener('dragstart',()=>{draggedTaskId=c.dataset.id;c.classList.add('dragging')});c.addEventListener('dragend',()=>c.classList.remove('dragging'))});board.querySelectorAll('.kan-drop').forEach(d=>{d.addEventListener('dragover',e=>e.preventDefault());d.addEventListener('drop',()=>{if(draggedTaskId){setTaskStatus(draggedTaskId,d.dataset.status);draggedTaskId=null}})})}
+function renderGantt(){const start=todayISO(),days=[...Array(14)].map((_,i)=>addDays(start,i-3)),min=days[0];const head=`<div class="gantt-head"><div class="gantt-name">Actividad</div><div class="gantt-scale">${days.map(d=>`<span>${fmtDate(d)}</span>`).join('')}</div></div>`;const rows=state.activities.map(a=>{const s=a.startDate||min,e=a.dueDate||s,total=13,left=Math.max(0,dayDiff(min,s)),end=Math.min(total,dayDiff(min,e)),w=Math.max(1,end-left+1),lp=left/14*100,wp=w/14*100,late=activityTasks(a.id).some(isOverdue);return `<div class="gantt-row"><div class="gantt-label"><strong>${a.title}</strong><small>${activityProgress(a.id)}% · ${a.owner}</small></div><div class="gantt-track"><div class="gantt-bar ${late?'late':''}" style="left:${lp}%;width:${wp}%">${late?'🔥 ':''}${activityProgress(a.id)}%</div></div></div>`}).join('');document.getElementById('gantt').innerHTML=head+rows}
+function renderPeople(){const box=document.getElementById('peopleGrid'),owners=ownerList();box.innerHTML=owners.map(o=>{const arr=state.tasks.filter(t=>t.owner===o),late=arr.filter(isOverdue).length,open=arr.filter(t=>t.status!=='Completada').length,done=arr.filter(t=>t.status==='Completada').length,p=arr.length?Math.round(done/arr.length*100):0;return `<div class="person-card"><div class="person-top"><div class="person-title"><div class="big-avatar">${initials(o)}</div><div><h4>${o}</h4><small>${arr.length} tareas asignadas</small></div></div>${late?'<span class="pill red">🔥 Rezago</span>':'<span class="pill green">🟢 En fecha</span>'}</div><div class="person-metrics"><div class="mini-metric"><b>${open}</b><span>Pendientes</span></div><div class="mini-metric"><b>${late}</b><span>Vencidas</span></div><div class="mini-metric"><b>${p}%</b><span>Avance</span></div></div></div>`}).join('')||'<div class="empty">Sin responsables.</div>'}
+
+async function setTaskStatus(id,status){const t=state.tasks.find(x=>x.id===id);if(!t)return;const before={estado:t.status,fecha_completada:t.completedAt};setCloud('syncing','Guardando');const update={estado:statusToDb[status],fecha_completada:status==='Completada'?new Date().toISOString():null};if(status!=='Aplazada'){update.ultimo_motivo_aplazo=null}const {error}=await db.from('agenda_tareas').update(update).eq('id',id);if(error){errMsg(error);return}await logHistory({activityId:t.activityId,taskId:id,type:status==='Completada'?'cierre':'estado',detail:`Estado: ${status}`,before,after:update});await syncFromCloud();toast(`${statusEmoji[status]} Estado actualizado a ${status}`)}
+function toggleTask(id){const t=state.tasks.find(x=>x.id===id);setTaskStatus(id,t.status==='Completada'?'En curso':'Completada')}
+async function deleteTask(id){if(!confirm('¿Eliminar esta mini tarea?'))return;const t=state.tasks.find(x=>x.id===id);setCloud('syncing','Eliminando');const {error}=await db.from('agenda_tareas').delete().eq('id',id);if(error){errMsg(error);return}await syncFromCloud();toast('🗑️ Mini tarea eliminada')}
+async function deleteActivity(id){const a=activityById(id);if(!confirm(`¿Eliminar “${a?.title||'esta actividad'}” y todas sus mini tareas?`))return;setCloud('syncing','Eliminando');const {error}=await db.from('agenda_actividades').delete().eq('id',id);if(error){errMsg(error);return}await syncFromCloud();toast('🗑️ Actividad eliminada')}
+function openPostpone(id){const t=state.tasks.find(x=>x.id===id);document.getElementById('postponeTaskId').value=id;document.getElementById('postponeDate').value=t?.postponedUntil||addDays(taskDue(t),1);document.getElementById('postponeReason').value=t?.postponeReason||'';document.getElementById('postponeModal').classList.add('show')}
+async function confirmPostpone(){const id=document.getElementById('postponeTaskId').value,t=state.tasks.find(x=>x.id===id),d=document.getElementById('postponeDate').value,r=document.getElementById('postponeReason').value.trim();if(!d){toast('Seleccione una nueva fecha');return}const before={estado:t.status,fecha:taskDue(t)};setCloud('syncing','Guardando aplazo');const update={estado:'aplazada',fecha_vencimiento:d,ultimo_motivo_aplazo:r,ultima_fecha_aplazo:new Date().toISOString(),aplazamientos:(t.postponeCount||0)+1};const {error}=await db.from('agenda_tareas').update(update).eq('id',id);if(error){errMsg(error);return}await logHistory({activityId:t.activityId,taskId:id,type:'aplazo',detail:r||'Tarea aplazada',before,after:update});closeModal('postponeModal');await syncFromCloud();toast('🕒 Tarea aplazada y nueva fecha registrada')}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+function openActivityModal(){document.getElementById('aTitle').value='';document.getElementById('aOwner').value='';document.getElementById('aProject').value='';document.getElementById('aStart').value=todayISO();document.getElementById('aDue').value=addDays(todayISO(),7);document.getElementById('aPriority').value='Media';document.getElementById('subtaskBuilder').innerHTML='';addSubtaskLine();addSubtaskLine();document.getElementById('activityModal').classList.add('show')}
+function addSubtaskLine(){const box=document.getElementById('subtaskBuilder'),d=document.createElement('div');d.className='subtask-line';d.innerHTML=`<input class="st-title" placeholder="Mini tarea"><input class="st-owner" placeholder="Responsable"><input class="st-due" type="date" value="${addDays(todayISO(),2)}"><button class="remove-sub" onclick="this.parentElement.remove()">✕</button>`;box.appendChild(d)}
+async function saveActivity(){const title=document.getElementById('aTitle').value.trim(),owner=document.getElementById('aOwner').value.trim(),project=document.getElementById('aProject').value.trim(),startDate=document.getElementById('aStart').value,dueDate=document.getElementById('aDue').value,priority=document.getElementById('aPriority').value;if(!title||!owner||!startDate||!dueDate){toast('Complete actividad, responsable y fechas');return}setCloud('syncing','Guardando');const payload={user_id:currentUser.id,titulo:title,responsable:owner,proyecto:project||null,fecha_inicio:startDate,fecha_fin:dueDate,prioridad:priorityToDb[priority],estado:'pendiente'};const {data:a,error:ae}=await db.from('agenda_actividades').insert(payload).select().single();if(ae){errMsg(ae);return}const lines=[...document.querySelectorAll('#subtaskBuilder .subtask-line')];const tasks=lines.map(line=>({title:line.querySelector('.st-title').value.trim(),owner:line.querySelector('.st-owner').value.trim()||owner,due:line.querySelector('.st-due').value||dueDate})).filter(x=>x.title);if(tasks.length){const taskRows=tasks.map(x=>({user_id:currentUser.id,actividad_id:a.id,titulo:x.title,responsable:x.owner,fecha_inicio:startDate,fecha_vencimiento_original:x.due,fecha_vencimiento:x.due,prioridad:priorityToDb[priority],estado:'pendiente',peso:1}));const {error:te}=await db.from('agenda_tareas').insert(taskRows);if(te){await db.from('agenda_actividades').delete().eq('id',a.id);errMsg(te);return}}await logHistory({activityId:a.id,type:'creacion',detail:'Actividad creada',after:payload});closeModal('activityModal');await syncFromCloud();toast('✨ Actividad creada')}
+function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='agenda360_respaldo_'+todayISO()+'.json';a.click();URL.revokeObjectURL(a.href)}
+document.getElementById('exportBtn').addEventListener('click',exportData);
+document.getElementById('importFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=async()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.activities)||!Array.isArray(d.tasks))throw new Error();if(!confirm('¿Importar este respaldo? Se agregará a la información existente en la nube.'))return;setCloud('syncing','Importando');const idMap={};for(const a of d.activities){const {data:na,error}=await db.from('agenda_actividades').insert({user_id:currentUser.id,titulo:a.title,responsable:a.owner||'',proyecto:a.project||null,fecha_inicio:a.startDate||null,fecha_fin:a.dueDate||null,prioridad:priorityToDb[a.priority]||'media',estado:'pendiente'}).select().single();if(error)throw error;idMap[a.id]=na.id}const rows=d.tasks.filter(t=>idMap[t.activityId]).map(t=>({user_id:currentUser.id,actividad_id:idMap[t.activityId],titulo:t.title,responsable:t.owner||'',fecha_inicio:t.startDate||null,fecha_vencimiento_original:t.dueDate||taskDue(t)||null,fecha_vencimiento:t.postponedUntil||t.dueDate||null,prioridad:priorityToDb[t.priority]||'media',estado:statusToDb[t.status]||'pendiente',peso:t.weight||1,aplazamientos:t.postponeCount||0,ultimo_motivo_aplazo:t.postponeReason||null}));if(rows.length){const {error}=await db.from('agenda_tareas').insert(rows);if(error)throw error}await syncFromCloud();toast('⬆️ Respaldo importado')}catch(error){errMsg(error)}finally{e.target.value=''}};r.readAsText(f)});
+document.getElementById('resetBtn').addEventListener('click',async()=>{if(!confirm('¿Vaciar toda la agenda en la nube? Esta acción eliminará todas sus actividades y mini tareas.'))return;setCloud('syncing','Vaciando');const {error}=await db.from('agenda_actividades').delete().eq('user_id',currentUser.id);if(error){errMsg(error);return}await syncFromCloud();toast('🗑️ Agenda vaciada')});
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
+
+async function login(){const email=document.getElementById('loginEmail').value.trim(),password=document.getElementById('loginPassword').value;if(!email||!password){document.getElementById('loginHelp').textContent='Ingrese correo y contraseña.';return}const btn=document.getElementById('loginBtn');btn.disabled=true;btn.textContent='Ingresando…';const {data,error}=await db.auth.signInWithPassword({email,password});btn.disabled=false;btn.textContent='Ingresar';if(error){document.getElementById('loginHelp').textContent='⚠️ '+error.message;return}currentUser=data.user;await enterApp()}
+async function logout(){await db.auth.signOut();currentUser=null;state={activities:[],tasks:[]};renderAll();document.getElementById('authScreen').classList.remove('hidden');document.getElementById('userEmail').textContent=''}
+async function enterApp(){document.getElementById('authScreen').classList.add('hidden');document.getElementById('userEmail').textContent=currentUser?.email||'';await syncFromCloud()}
+document.getElementById('loginBtn').addEventListener('click',login);document.getElementById('loginPassword').addEventListener('keydown',e=>{if(e.key==='Enter')login()});document.getElementById('logoutBtn').addEventListener('click',logout);
+
+async function init(){renderAll();const {data:{session}}=await db.auth.getSession();if(session?.user){currentUser=session.user;await enterApp()}else{document.getElementById('authScreen').classList.remove('hidden')}}
+db.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'){document.getElementById('authScreen').classList.remove('hidden')}else if(session?.user&&!currentUser){currentUser=session.user;enterApp()}});
+init();
+</script>
+</body>
+</html>
